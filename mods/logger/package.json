@@ -1,0 +1,25 @@
+{
+  "name": "@fonoster/logger",
+  "version": "0.16.7",
+  "description": "Logger module",
+  "author": "",
+  "homepage": "https://github.com/fonoster/fonoster#readme",
+  "license": "MIT",
+  "main": "dist/index",
+  "types": "dist/index",
+  "scripts": {
+    "prebuild": "rimraf ./dist tsconfig.tsbuildinfo",
+    "build": "tsc -b tsconfig.json"
+  },
+  "directories": {
+    "src": "src",
+    "test": "test"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "fluent-logger": "^3.4.1",
+    "winston": "^3.13.0"
+  }
+}

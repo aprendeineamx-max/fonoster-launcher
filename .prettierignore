@@ -1,0 +1,9 @@
+**/dist
+**/package-lock.json
+**/*.md
+**/generated/*
+.husky
+public
+*.hbs
+**/.react-router
+/.nx/workspace-data

@@ -1,0 +1,22 @@
+{
+  "name": "@fonoster/types",
+  "version": "0.16.7",
+  "description": "Common types for Fonoster projects",
+  "author": "",
+  "homepage": "https://github.com/fonoster/fonoster#readme",
+  "license": "MIT",
+  "main": "dist/index",
+  "types": "dist/index",
+  "directories": {
+    "src": "src",
+    "test": "test"
+  },
+  "scripts": {
+    "prebuild": "rimraf ./dist tsconfig.tsbuildinfo",
+    "build": "tsc -b tsconfig.json",
+    "clean": "rimraf ./dist node_modules tsconfig.tsbuildinfo"
+  },
+  "files": [
+    "dist"
+  ]
+}

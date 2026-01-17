@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "fonoster": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@fonoster/mcp"
+      ],
+      "env": {
+        "MCP_WORKSPACE_ACCESS_KEY_ID": "your-workspace-access-key-id",
+        "MCP_APIKEY_ACCESS_KEY_ID": "your-apikey-access-key-id",
+        "MCP_APIKEY_ACCESS_KEY_SECRET": "your-apikey-access-key-secret"
+      }
+    }
+  }
+}

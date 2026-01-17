@@ -1,0 +1,34 @@
+{
+  "name": "@fonoster/sipnet",
+  "version": "0.16.10",
+  "description": "Routr-based SIP stack",
+  "author": "",
+  "homepage": "https://github.com/fonoster/fonoster#readme",
+  "license": "MIT",
+  "main": "dist/index",
+  "types": "dist/index",
+  "directories": {
+    "src": "src",
+    "test": "test"
+  },
+  "scripts": {
+    "prebuild": "rimraf ./dist tsconfig.tsbuildinfo",
+    "build": "tsc -b tsconfig.json",
+    "clean": "rimraf ./dist node_modules tsconfig.tsbuildinfo"
+  },
+  "bin": {
+    "fonoster": "./dist/index.js"
+  },
+  "dependencies": {
+    "@fonoster/common": "^0.16.8",
+    "@fonoster/identity": "^0.16.10",
+    "@fonoster/logger": "^0.16.7",
+    "@fonoster/types": "^0.16.7",
+    "@grpc/grpc-js": "~1.10.6",
+    "@routr/sdk": "2.13.1",
+    "zod": "^3.23.8"
+  },
+  "files": [
+    "dist"
+  ]
+}
