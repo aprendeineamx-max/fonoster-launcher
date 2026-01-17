@@ -207,7 +207,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/psanders/Projects/fonoster/mods/identity/src/generated/@prisma/client",
+      "value": "C:\\Users\\WinAdmin\\Desktop\\Celuradar\\mods\\identity\\src\\generated\\@prisma\\client",
       "fromEnvVar": null
     },
     "config": {
@@ -216,17 +216,16 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "darwin-arm64",
+        "value": "windows",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/psanders/Projects/fonoster/mods/identity/schema.prisma",
+    "sourceFilePath": "C:\\Users\\WinAdmin\\Desktop\\Celuradar\\mods\\identity\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
-    "schemaEnvPath": "../../../../../../.env"
+    "rootEnvPath": null
   },
   "relativePath": "../../../..",
   "clientVersion": "6.19.1",

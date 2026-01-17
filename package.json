@@ -118,6 +118,12 @@
   },
   "dependencies": {
     "@prisma/client": "^6.19.1",
+    "axios": "^1.13.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "openai": "^6.16.0",
+    "socket.io": "^4.8.3",
     "xstate": "5.17.3"
   },
   "optionalDependencies": {
