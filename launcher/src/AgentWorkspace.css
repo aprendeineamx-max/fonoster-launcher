@@ -1,0 +1,71 @@
+.agent-workspace {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #1e1e1e;
+    color: #fff;
+}
+
+.workspace-header {
+    height: 40px;
+    background-color: #252526;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    border-bottom: 1px solid #333;
+    gap: 10px;
+}
+
+.workspace-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.file-explorer {
+    width: 250px;
+    background-color: #252526;
+    border-right: 1px solid #333;
+    overflow-y: auto;
+    font-size: 13px;
+    padding: 10px;
+}
+
+.editor-pane {
+    flex: 1;
+}
+
+.terminal-pane {
+    height: 30vh;
+    background-color: #1e1e1e;
+    border-top: 1px solid #333;
+    padding: 5px;
+}
+
+.term-container {
+    height: 100%;
+    width: 100%;
+}
+
+.file-tree-node {
+    margin-left: 10px;
+}
+
+.node-label {
+    cursor: pointer;
+    padding: 2px;
+}
+
+.node-label:hover {
+    background-color: #37373d;
+}
+
+.file-item {
+    cursor: pointer;
+    padding: 2px 2px 2px 15px;
+    color: #d4d4d4;
+}
+
+.file-item:hover {
+    background-color: #37373d;
+}
