@@ -1,0 +1,153 @@
+.container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    background-color: #0d1117;
+    color: #c9d1d9;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #161b22;
+    border-right: 1px solid #30363d;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar h2 {
+    color: #58a6ff;
+    margin-bottom: 30px;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.phases {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.phase-btn {
+    background: #21262d;
+    border: 1px solid #30363d;
+    color: #c9d1d9;
+    padding: 12px;
+    text-align: left;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.phase-btn:hover {
+    background: #30363d;
+    border-color: #8b949e;
+}
+
+.phase-btn.active {
+    border-color: #58a6ff;
+}
+
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #484f58;
+}
+
+.phase-btn.running .status-indicator {
+    background-color: #dbae0d;
+    box-shadow: 0 0 5px #dbae0d;
+}
+
+.phase-btn.success .status-indicator {
+    background-color: #238636;
+}
+
+.phase-btn.error .status-indicator {
+    background-color: #da3633;
+}
+
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+    overflow: hidden;
+}
+
+.terminal {
+    flex: 1;
+    background-color: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.terminal-header {
+    background-color: #161b22;
+    padding: 10px 15px;
+    border-bottom: 1px solid #30363d;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+
+.terminal-body {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    font-family: 'Consolas', monospace;
+    white-space: pre-wrap;
+    font-size: 0.9rem;
+    color: #e6edf3;
+}
+
+.ai-btn {
+    background-color: #8957e5;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.ai-btn:hover {
+    background-color: #9e6cf5;
+}
+
+.ai-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.ai-panel {
+    height: 200px;
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+.ai-panel h3 {
+    margin-top: 0;
+    color: #8957e5;
+    border-bottom: 1px solid #30363d;
+    padding-bottom: 5px;
+}
+
+.ai-content {
+    line-height: 1.5;
+    color: #c9d1d9;
+}
