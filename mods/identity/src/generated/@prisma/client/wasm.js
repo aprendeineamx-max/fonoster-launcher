@@ -87,9 +87,6 @@ Prisma.NullTypes = {
  * Enums
  */
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
-  ReadUncommitted: 'ReadUncommitted',
-  ReadCommitted: 'ReadCommitted',
-  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -157,15 +154,15 @@ exports.Prisma.NullableJsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
-exports.Prisma.QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
-};
-
 exports.Prisma.JsonNullValueFilter = {
   DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
+};
+
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
 };
 
 exports.Prisma.NullsOrder = {
@@ -233,18 +230,18 @@ const config = {
   "datasourceNames": [
     "db"
   ],
-  "activeProvider": "postgresql",
+  "activeProvider": "sqlite",
   "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
-        "fromEnvVar": "APISERVER_IDENTITY_DATABASE_URL",
-        "value": null
+        "fromEnvVar": null,
+        "value": "file:./dev.db"
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"src/generated/@prisma/client\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"APISERVER_IDENTITY_DATABASE_URL\")\n}\n\nmodel User {\n  ref                 String   @id @default(uuid())\n  accessKeyId         String   @unique @map(\"access_key_id\") @db.VarChar(255)\n  name                String   @db.VarChar(60)\n  email               String   @unique @db.VarChar(255)\n  emailVerified       Boolean  @default(false) @map(\"email_verified\")\n  password            String   @map(\"password_hash\") /// @encrypted\n  phoneNumber         String?  @map(\"phone_number\") @db.VarChar(20)\n  phoneNumberVerified Boolean  @default(false) @map(\"phone_number_verified\")\n  avatar              String?  @db.VarChar(255)\n  createdAt           DateTime @default(now()) @map(\"created_at\") @db.Timestamptz(3)\n  updatedAt           DateTime @default(now()) @map(\"updated_at\") @db.Timestamptz(3)\n  extended            Json?\n\n  // Relations\n  ownedWorkspaces Workspace[] // Workspaces owned by the user\n  memberships     WorkspaceMember[] // Workspaces the user is a member of\n\n  // Indexes and maps\n  @@index([email], type: Hash)\n  @@index([accessKeyId], type: Hash)\n  @@map(\"users\")\n}\n\nmodel Workspace {\n  ref         String   @id @default(uuid())\n  accessKeyId String   @unique @map(\"access_key_id\") @db.VarChar(255)\n  name        String   @db.VarChar(60)\n  createdAt   DateTime @default(now()) @map(\"created_at\") @db.Timestamptz(3)\n  updatedAt   DateTime @default(now()) @map(\"updated_at\") @db.Timestamptz(3)\n\n  // Relations\n  owner    User              @relation(fields: [ownerRef], references: [ref], onDelete: Cascade)\n  ownerRef String            @map(\"owner_ref\")\n  members  WorkspaceMember[]\n  apiKeys  ApiKey[]\n\n  // Indexes and maps\n  @@index([accessKeyId], type: Hash)\n  @@index([ownerRef], type: Hash)\n  @@map(\"workspaces\")\n}\n\nmodel WorkspaceMember {\n  ref       String                @id @default(uuid())\n  status    WorkspaceMemberStatus @default(PENDING)\n  role      Role                  @default(WORKSPACE_MEMBER)\n  createdAt DateTime              @default(now()) @map(\"created_at\") @db.Timestamptz(3)\n  updatedAt DateTime              @default(now()) @map(\"updated_at\") @db.Timestamptz(3)\n\n  // Relations\n  user         User      @relation(fields: [userRef], references: [ref], onDelete: Cascade)\n  userRef      String    @map(\"user_ref\")\n  workspace    Workspace @relation(fields: [workspaceRef], references: [ref], onDelete: Cascade)\n  workspaceRef String    @map(\"workspace_ref\")\n\n  @@unique([userRef, workspaceRef])\n  @@map(\"workspace_members\")\n}\n\nmodel ApiKey {\n  ref             String    @id @default(uuid())\n  accessKeyId     String    @unique @map(\"access_key_id\") @db.VarChar(255)\n  accessKeySecret String    @map(\"access_key_secret\") @db.VarChar(255) /// @encrypted\n  role            Role      @default(WORKSPACE_MEMBER)\n  createdAt       DateTime  @default(now()) @map(\"created_at\") @db.Timestamptz(3)\n  updatedAt       DateTime  @default(now()) @map(\"updated_at\") @db.Timestamptz(3)\n  expiresAt       DateTime? @map(\"expires_at\") @db.Timestamptz(3)\n\n  // Relations\n  workspace    Workspace @relation(fields: [workspaceRef], references: [ref], onDelete: Cascade)\n  workspaceRef String    @map(\"workspace_ref\")\n\n  // Indexes and maps\n  @@index([accessKeyId], type: Hash)\n  @@index([workspaceRef], type: Hash)\n  @@map(\"api_keys\")\n}\n\nmodel VerificationCode {\n  ref       String           @id @default(uuid())\n  type      VerificationType\n  code      String           @db.VarChar(6)\n  value     String           @db.VarChar(255)\n  expiresAt DateTime         @map(\"expires_at\") @db.Timestamptz(3)\n  createdAt DateTime         @default(now()) @map(\"created_at\") @db.Timestamptz(3)\n\n  // Indexes and maps\n  @@index([code], type: Hash)\n  @@map(\"verification_codes\")\n}\n\nenum VerificationType {\n  EMAIL\n  PHONE\n}\n\nenum WorkspaceMemberStatus {\n  PENDING\n  ACTIVE\n\n  @@map(\"workspace_member_status\")\n}\n\nenum Role {\n  USER\n  WORKSPACE_ADMIN\n  WORKSPACE_OWNER\n  WORKSPACE_MEMBER\n\n  @@map(\"role\")\n}\n",
-  "inlineSchemaHash": "3c4034bb83309aca32420626a655f9903a7716403fd270cee2525246f662cb96",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"src/generated/@prisma/client\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = \"file:./dev.db\"\n}\n\nmodel User {\n  ref                 String   @id @default(uuid())\n  accessKeyId         String   @unique @map(\"access_key_id\")\n  name                String\n  email               String   @unique\n  emailVerified       Boolean  @default(false) @map(\"email_verified\")\n  password            String   @map(\"password_hash\") /// @encrypted\n  phoneNumber         String?  @map(\"phone_number\")\n  phoneNumberVerified Boolean  @default(false) @map(\"phone_number_verified\")\n  avatar              String?\n  createdAt           DateTime @default(now()) @map(\"created_at\")\n  updatedAt           DateTime @default(now()) @map(\"updated_at\")\n  extended            Json?\n\n  // Relations\n  ownedWorkspaces Workspace[] // Workspaces owned by the user\n  memberships     WorkspaceMember[] // Workspaces the user is a member of\n\n  // Indexes and maps\n  @@index([email])\n  @@index([accessKeyId])\n  @@map(\"users\")\n}\n\nmodel Workspace {\n  ref         String   @id @default(uuid())\n  accessKeyId String   @unique @map(\"access_key_id\")\n  name        String\n  createdAt   DateTime @default(now()) @map(\"created_at\")\n  updatedAt   DateTime @default(now()) @map(\"updated_at\")\n\n  // Relations\n  owner    User              @relation(fields: [ownerRef], references: [ref], onDelete: Cascade)\n  ownerRef String            @map(\"owner_ref\")\n  members  WorkspaceMember[]\n  apiKeys  ApiKey[]\n\n  // Indexes and maps\n  @@index([accessKeyId])\n  @@index([ownerRef])\n  @@map(\"workspaces\")\n}\n\nmodel WorkspaceMember {\n  ref       String                @id @default(uuid())\n  status    WorkspaceMemberStatus @default(PENDING)\n  role      Role                  @default(WORKSPACE_MEMBER)\n  createdAt DateTime              @default(now()) @map(\"created_at\")\n  updatedAt DateTime              @default(now()) @map(\"updated_at\")\n\n  // Relations\n  user         User      @relation(fields: [userRef], references: [ref], onDelete: Cascade)\n  userRef      String    @map(\"user_ref\")\n  workspace    Workspace @relation(fields: [workspaceRef], references: [ref], onDelete: Cascade)\n  workspaceRef String    @map(\"workspace_ref\")\n\n  @@unique([userRef, workspaceRef])\n  @@map(\"workspace_members\")\n}\n\nmodel ApiKey {\n  ref             String    @id @default(uuid())\n  accessKeyId     String    @unique @map(\"access_key_id\")\n  accessKeySecret String    @map(\"access_key_secret\") /// @encrypted\n  role            Role      @default(WORKSPACE_MEMBER)\n  createdAt       DateTime  @default(now()) @map(\"created_at\")\n  updatedAt       DateTime  @default(now()) @map(\"updated_at\")\n  expiresAt       DateTime? @map(\"expires_at\")\n\n  // Relations\n  workspace    Workspace @relation(fields: [workspaceRef], references: [ref], onDelete: Cascade)\n  workspaceRef String    @map(\"workspace_ref\")\n\n  // Indexes and maps\n  @@index([accessKeyId])\n  @@index([workspaceRef])\n  @@map(\"api_keys\")\n}\n\nmodel VerificationCode {\n  ref       String           @id @default(uuid())\n  type      VerificationType\n  code      String\n  value     String\n  expiresAt DateTime         @map(\"expires_at\")\n  createdAt DateTime         @default(now()) @map(\"created_at\")\n\n  // Indexes and maps\n  @@index([code])\n  @@map(\"verification_codes\")\n}\n\nenum VerificationType {\n  EMAIL\n  PHONE\n}\n\nenum WorkspaceMemberStatus {\n  PENDING\n  ACTIVE\n\n  @@map(\"workspace_member_status\")\n}\n\nenum Role {\n  USER\n  WORKSPACE_ADMIN\n  WORKSPACE_OWNER\n  WORKSPACE_MEMBER\n\n  @@map(\"role\")\n}\n",
+  "inlineSchemaHash": "a546a08f6d937176552f3ca3aadee80df1efb9ee8a9ba2c3e4f5e0262f35bfd5",
   "copyEngine": true
 }
 config.dirname = '/'
@@ -262,9 +259,7 @@ config.engineWasm = {
 config.compilerWasm = undefined
 
 config.injectableEdgeEnv = () => ({
-  parsed: {
-    APISERVER_IDENTITY_DATABASE_URL: typeof globalThis !== 'undefined' && globalThis['APISERVER_IDENTITY_DATABASE_URL'] || typeof process !== 'undefined' && process.env && process.env.APISERVER_IDENTITY_DATABASE_URL || undefined
-  }
+  parsed: {}
 })
 
 if (typeof globalThis !== 'undefined' && globalThis['DEBUG'] || typeof process !== 'undefined' && process.env && process.env.DEBUG || undefined) {

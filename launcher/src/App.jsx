@@ -156,7 +156,26 @@ function App() {
                     setStatuses(prev => ({ ...prev, [phase.id]: 'running' }));
                     axios.post(`${API_URL}/run-phase`, { command: phase.command, args: phase.args });
                     setLogs(prev => [...prev, `\n--- Fase iniciada (proceso largo): ${phase.name} ---\n`]);
-                    await new Promise(r => setTimeout(r, 3000));
+
+                    if (phase.name.toLowerCase().includes('docker')) {
+                        setLogs(prev => [...prev, `\n... Esperando a que la Base de Datos esté lista (Puerto 5432) ...\n`]);
+                        let attempts = 0;
+                        while (attempts < 60) { // Try for 2 minutes
+                            try {
+                                await new Promise(r => setTimeout(r, 2000));
+                                const pRes = await axios.post(`${API_URL}/check-port`, { port: 5432 });
+                                if (pRes.data.open) {
+                                    setLogs(prev => [...prev, `✔ Base de Datos lista en puerto 5432.\n`]);
+                                    break;
+                                }
+                            } catch (e) { }
+                            attempts++;
+                            if (attempts % 5 === 0) setLogs(prev => [...prev, `... esperanding DB (${attempts}/60)...\n`]);
+                        }
+                    } else {
+                        await new Promise(r => setTimeout(r, 5000)); // Default wait for others
+                    }
+
                     setStatuses(prev => ({ ...prev, [phase.id]: 'success' }));
                     continue;
                 }

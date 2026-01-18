@@ -4,22 +4,22 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("APISERVER_IDENTITY_DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model User {
   ref                 String   @id @default(uuid())
-  accessKeyId         String   @unique @map("access_key_id") @db.VarChar(255)
-  name                String   @db.VarChar(60)
-  email               String   @unique @db.VarChar(255)
+  accessKeyId         String   @unique @map("access_key_id") 
+  name                String   
+  email               String   @unique 
   emailVerified       Boolean  @default(false) @map("email_verified")
   password            String   @map("password_hash") /// @encrypted
-  phoneNumber         String?  @map("phone_number") @db.VarChar(20)
+  phoneNumber         String?  @map("phone_number") 
   phoneNumberVerified Boolean  @default(false) @map("phone_number_verified")
-  avatar              String?  @db.VarChar(255)
-  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt           DateTime @default(now()) @map("updated_at") @db.Timestamptz(3)
+  avatar              String?  
+  createdAt           DateTime @default(now()) @map("created_at") 
+  updatedAt           DateTime @default(now()) @map("updated_at") 
   extended            Json?
 
   // Relations
@@ -27,17 +27,17 @@ model User {
   memberships     WorkspaceMember[] // Workspaces the user is a member of
 
   // Indexes and maps
-  @@index([email], type: Hash)
-  @@index([accessKeyId], type: Hash)
+  @@index([email])
+  @@index([accessKeyId])
   @@map("users")
 }
 
 model Workspace {
   ref         String   @id @default(uuid())
-  accessKeyId String   @unique @map("access_key_id") @db.VarChar(255)
-  name        String   @db.VarChar(60)
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz(3)
+  accessKeyId String   @unique @map("access_key_id") 
+  name        String   
+  createdAt   DateTime @default(now()) @map("created_at") 
+  updatedAt   DateTime @default(now()) @map("updated_at") 
 
   // Relations
   owner    User              @relation(fields: [ownerRef], references: [ref], onDelete: Cascade)
@@ -46,8 +46,8 @@ model Workspace {
   apiKeys  ApiKey[]
 
   // Indexes and maps
-  @@index([accessKeyId], type: Hash)
-  @@index([ownerRef], type: Hash)
+  @@index([accessKeyId])
+  @@index([ownerRef])
   @@map("workspaces")
 }
 
@@ -55,8 +55,8 @@ model WorkspaceMember {
   ref       String                @id @default(uuid())
   status    WorkspaceMemberStatus @default(PENDING)
   role      Role                  @default(WORKSPACE_MEMBER)
-  createdAt DateTime              @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt DateTime              @default(now()) @map("updated_at") @db.Timestamptz(3)
+  createdAt DateTime              @default(now()) @map("created_at") 
+  updatedAt DateTime              @default(now()) @map("updated_at") 
 
   // Relations
   user         User      @relation(fields: [userRef], references: [ref], onDelete: Cascade)
@@ -70,33 +70,33 @@ model WorkspaceMember {
 
 model ApiKey {
   ref             String     @id @default(uuid())
-  accessKeyId     String     @unique @map("access_key_id") @db.VarChar(255)
-  accessKeySecret String     @map("access_key_secret") @db.VarChar(255) /// @encrypted
+  accessKeyId     String     @unique @map("access_key_id") 
+  accessKeySecret String     @map("access_key_secret")  /// @encrypted
   role            Role       @default(WORKSPACE_MEMBER)
-  createdAt       DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt       DateTime   @default(now()) @map("updated_at") @db.Timestamptz(3)
-  expiresAt       DateTime?  @map("expires_at") @db.Timestamptz(3)
+  createdAt       DateTime   @default(now()) @map("created_at") 
+  updatedAt       DateTime   @default(now()) @map("updated_at") 
+  expiresAt       DateTime?  @map("expires_at") 
 
   // Relations
   workspace    Workspace @relation(fields: [workspaceRef], references: [ref], onDelete: Cascade)
   workspaceRef String    @map("workspace_ref")
 
   // Indexes and maps
-  @@index([accessKeyId], type: Hash)
-  @@index([workspaceRef], type: Hash)
+  @@index([accessKeyId])
+  @@index([workspaceRef])
   @@map("api_keys")
 }
 
 model VerificationCode {
   ref       String           @id @default(uuid())
   type      VerificationType
-  code      String           @db.VarChar(6)
-  value     String           @db.VarChar(255)
-  expiresAt DateTime         @map("expires_at") @db.Timestamptz(3)
-  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  code      String           
+  value     String           
+  expiresAt DateTime         @map("expires_at") 
+  createdAt DateTime         @default(now()) @map("created_at") 
 
   // Indexes and maps
-  @@index([code], type: Hash)
+  @@index([code])
   @@map("verification_codes")
 }
 

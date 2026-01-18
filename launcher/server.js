@@ -110,6 +110,25 @@ app.post('/api/check-system', (req, res) => {
     });
 });
 
+app.post('/api/check-port', (req, res) => {
+    const { port } = req.body;
+    const net = require('net');
+    const client = new net.Socket();
+
+    // Timeout of 2s
+    client.setTimeout(2000);
+
+    client.on('connect', () => {
+        client.end();
+        res.json({ open: true });
+    }).on('timeout', () => {
+        client.destroy();
+        res.json({ open: false });
+    }).on('error', (err) => {
+        res.json({ open: false });
+    }).connect(port, 'localhost');
+});
+
 // --- File System API for Agent ---
 // --- File System API for Agent ---
 // const fs = require('fs'); // Already required above
@@ -330,6 +349,79 @@ app.get('/api/mcp/tools', (req, res) => {
     });
 });
 // ---------------------------
+
+app.post('/api/lifecycle/install', async (req, res) => {
+    io.emit('log', '\n=== INICIANDO INSTALACIÓN COMPLETA (MODO SERVIDOR) ===\n');
+
+    const run = (cmd, args, description) => {
+        return new Promise((resolve, reject) => {
+            io.emit('log', `\n> ${description}...\n> Exec: ${cmd} ${args.join(' ')}\n`);
+            const proc = spawn(cmd, args, { cwd: PROJECT_ROOT, shell: true, env: { ...process.env, FORCE_COLOR: 'true' } });
+
+            proc.stdout.on('data', d => io.emit('log', d.toString()));
+            proc.stderr.on('data', d => io.emit('log', d.toString()));
+
+            proc.on('close', code => {
+                if (code === 0) resolve();
+                else reject(new Error(`${description} failed with code ${code}`));
+            });
+        });
+    };
+
+    const waitForPort = (port, timeoutMs = 60000) => {
+        io.emit('log', `\n... Esperando puerto ${port} (Base de Datos) ...\n`);
+        const start = Date.now();
+        return new Promise((resolve, reject) => {
+            const check = () => {
+                if (Date.now() - start > timeoutMs) return reject(new Error(`Timeout waiting for port ${port}`));
+                const net = require('net');
+                const client = new net.Socket();
+                client.setTimeout(2000);
+                client.on('connect', () => {
+                    client.end();
+                    io.emit('log', `✔ Puerto ${port} detectado abierto.\n`);
+                    resolve();
+                }).on('timeout', () => {
+                    client.destroy();
+                    setTimeout(check, 2000);
+                }).on('error', () => {
+                    setTimeout(check, 2000);
+                }).connect(port, 'localhost');
+            };
+            check();
+        });
+    };
+
+    try {
+        await run('npm', ['install'], 'Instalando Dependencias (NPM)');
+
+        io.emit('log', '\n> MODO NATIVO DETECTADO: Usando SQLite. Saltando Docker.\n');
+        // Skipped: await run('npm', ['run', 'start:services'], 'Iniciando Infraestructura (Docker)');
+        // Skipped: await waitForPort(5432, 120000);
+
+        // Build is essential
+        await run('npm', ['run', 'build'], 'Construyendo Proyecto (Build)');
+
+        // Migrate & Seed (Uses SQLite now)
+        await run('npm', ['run', 'db:migrate'], 'Migrando Base de Datos (SQLite)');
+        await run('npm', ['run', 'db:seed'], 'Sembrando Datos Iniciales');
+
+        io.emit('log', '\n✔ INSTALACIÓN DEL SERVIDOR COMPLETADA EXITOSAMENTE (MODO NATIVO).\n');
+        io.emit('log', '\n> Iniciando Servidor API en segundo plano...\n');
+
+        const apiProc = spawn('npm', ['run', 'start:apiserver'], { cwd: PROJECT_ROOT, shell: true, env: { ...process.env, FORCE_COLOR: 'true' } });
+        // We do NOT wait for apiProc because it runs forever
+        apiProc.stdout.on('data', d => io.emit('log', d.toString()));
+        apiProc.stderr.on('data', d => io.emit('log', d.toString()));
+        activeProcess = apiProc;
+
+        res.json({ success: true, message: 'Installation complete and server started' });
+
+    } catch (e) {
+        io.emit('log', `\n❌ ERROR CRÍTICO EN INSTALACIÓN: ${e.message}\n`);
+        res.status(500).json({ error: e.message });
+    }
+});
 
 
 app.post('/api/troubleshoot', async (req, res) => {
